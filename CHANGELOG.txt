@@ -1,0 +1,12 @@
+1.1.2
+
+- Name change after rebranding
+
+1.1.1
+
+- Bug fix: reference override removed
+- Added object Shop as possible variable
+
+1.1.0
+
+- Defined globals in two ways; $GLOBAL and global keyword
