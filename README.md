@@ -19,7 +19,7 @@ In the configuration page you can define a format. Let's take the example format
 
 **Config value**: `{cart->id:%d}`
 
-**Output**: `S003638`
+**Output**: `5424`
 
 ### Example 2: First letter of the shop's name in capital and the order nummer with 6 preceding zeroes
 
