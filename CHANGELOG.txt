@@ -1,3 +1,7 @@
+1.1.3
+
+- Added warning in the configuration page if the position of the module is not high enough
+
 1.1.2
 
 - Name change after rebranding
