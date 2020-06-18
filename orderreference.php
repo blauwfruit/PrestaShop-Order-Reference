@@ -107,9 +107,16 @@ class Orderreference extends Module
             }
         }
 
+        $adminModulesPositionsLink = $this->context->link->getAdminLink('AdminModulesPositions');
+
+
         $this->_html .= $this->renderForm();
         $preview_reference = $this->getRandomReference();
-        $this->context->smarty->assign(array('preview_reference' => $preview_reference));
+        $this->context->smarty->assign(array(
+            'preview_reference' => $preview_reference,
+            'module_position_is_hight' => $this->checkModuleHookPositionisHigh(),
+            'module_position_link' => $adminModulesPositionsLink,
+        ));
         $this->_html .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
         return $this->_html;
     }    
@@ -207,5 +214,16 @@ class Orderreference extends Module
     {
         $id_order = Db::getInstance()->getValue('SELECT id_order FROM '._DB_PREFIX_.'orders ORDER BY RAND()');
         return $this->getFormattedReference($id_order);
+    }
+
+    public function checkModuleHookPositionisHigh()
+    {
+        return 'orderreference' == Db::getInstance()->getValue(
+            'SELECT m.name FROM '._DB_PREFIX_.'hook h
+            LEFT JOIN '._DB_PREFIX_.'hook_module hm ON h.id_hook=hm.id_hook
+            LEFT JOIN '._DB_PREFIX_.'module m ON hm.id_module=m.id_module
+            WHERE h.name LIKE "actionValidateOrder"
+            ORDER BY hm.position'
+        );
     }
 }
