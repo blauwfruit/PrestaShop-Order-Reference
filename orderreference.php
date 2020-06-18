@@ -1,5 +1,13 @@
 <?php
 /**
+*   Orderreference
+*
+*   Do not copy, modify or distribute this document in any form.
+*
+*   @author     Matthijs <matthijs@blauwfruit.nl>
+*   @copyright  Copyright (c) 2013-2020 blauwfruit (http://blauwfruit.nl)
+*   @license    Proprietary Software
+*
 */
 
 if (!defined('_PS_VERSION_')) {
@@ -73,7 +81,6 @@ class Orderreference extends Module
            ),
         );
 
-
         $helper = new HelperForm();
         $helper->submit_action = 'submit'.$this->name;
         $helper->module = $this;
@@ -81,9 +88,7 @@ class Orderreference extends Module
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
         $helper->title = $this->displayName;
-        /* API key */
         $helper->fields_value['ORDERREFERENCE_format'] = Configuration::get('ORDERREFERENCE_format');
-        /* Obligatory */
 
         return $helper->generateForm(array($format));
     }
