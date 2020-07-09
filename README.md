@@ -27,6 +27,12 @@ In the configuration page you can define a format. Let's take the example format
 
 **Output**: `S003638`
 
+### Example 2: A hardcoded string
+
+**Config value**: `{20}{order->id:%06d}`
+
+**Output**: `20000161`
+
 The random example is shown once you save the configuration.
 
 Every format needs a modifier, like `%d` (digit) and `%s` (string).
