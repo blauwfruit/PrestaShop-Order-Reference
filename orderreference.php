@@ -17,14 +17,14 @@ if (!defined('_PS_VERSION_')) {
 class Orderreference extends Module
 {
     protected $config_form = false;
-    
+
     public $_html;
 
     public function __construct()
     {
         $this->name = 'orderreference';
         $this->tab = 'billing_invoicing';
-        $this->version = '1.1.3';
+        $this->version = '1.1.4';
         $this->author = 'blauwfruit';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -45,11 +45,9 @@ class Orderreference extends Module
     {
         Configuration::updateValue('ORDERREFERENCE_LIVE_MODE', false);
 
-        return parent::install() &&
-            $this->registerHook('actionObjectOrderUpdateAfter') &&
-            $this->registerHook('actionPaymentConfirmation') &&
-            $this->registerHook('actionValidateOrder') &&
-            $this->registerHook('actionOrderStatusUpdate');
+        return parent::install()
+            && $this->registerHook('actionObjectOrderAddAfter')
+        ;
     }
 
     public function uninstall()
@@ -119,24 +117,11 @@ class Orderreference extends Module
         ));
         $this->_html .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
         return $this->_html;
-    }    
-
-    public function hookActionPaymentConfirmation($params)
-    {
-    	$this->changeReference($params['id_order']);
     }
 
-    public function hookActionValidateOrder($params)
+    public function hookActionObjectOrderAddAfter(array $params)
     {
-    	$params['order']->reference = $this->changeReference($params['order']->id);
-        $order = $params['order'];
-        global $order;
-        $GLOBALS['order'] = $params['order'];
-    }
-
-    public function hookActionObjectOrderUpdateAfter($params)
-    {
-    	$this->changeReference($params['object']->id);
+    	$params['object']->reference = $this->changeReference($params['object']->id);
     }
 
     public function changeReference($id_order)
