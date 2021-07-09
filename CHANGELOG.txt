@@ -1,3 +1,13 @@
+1.2.0
+
+- fix: payment reference is not changed @gett-thijssimonis
+- fix: remove obsolete hook pos check @gett-thijssimonis
+- fix: return old reference in Orderreference::getFormattedReference() when it fails, to be compatible with changes of @gett-thijssimonis
+- bumped version as minor update (since hooks are changed it feels like a bit more than a patch..)
+- style: add license to upgrade file 1.2.0
+- fix: change upgrade file return always true, since a hook might already be unregistered by an BO employee
+- ux: add examples on a new line with using <pre> to copy it more easily
+
 1.1.3
 
 - Added warning in the configuration page if the position of the module is not high enough
