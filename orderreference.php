@@ -116,7 +116,7 @@ class Orderreference extends Module
 
     public function hookActionObjectOrderAddAfter(array $params)
     {
-    	$params['object']->reference = $this->changeReference($params['object']->id);
+        $params['object']->reference = $this->changeReference($params['object']->id);
     }
 
     public function changeReference($id_order)
@@ -124,7 +124,7 @@ class Orderreference extends Module
         $order = new Order($id_order);
         $reference = $this->getFormattedReference($id_order);
         if (!$reference) {
-            return;
+            return $order->reference;
         }
         $db = Db::getInstance();
         $db->update('orders', array('reference' => $reference),  'id_order=' . (int)$id_order, $limit = 1);
@@ -155,7 +155,7 @@ class Orderreference extends Module
 		}
 		if (!Validate::isReference($reference)) {
     		Logger::addLog(sprintf('[%s] reference could not be changed, format has invalid characters', $this->name));
-    		return false;
+            return $this->getVariable('order->reference', $id_order);
 		} else {
 			return $reference;
 		}
