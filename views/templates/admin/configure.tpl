@@ -30,12 +30,8 @@
             {$preview_reference}
         </code>
         <h2>Examples</h2>
-        <code>
-            {literal}{delivery_address->company:%4.4s:capitalize}{cart->id:%06d}{_}{customer->firstname:%5.5s:capitalize}{/literal}
-        </code>
-        <code>
-            {literal}{shop->name:%1.1s:capitalize}{order->id:%06d}{/literal}
-        </code>
+        <pre>{literal}{delivery_address->company:%4.4s:capitalize}{cart->id:%06d}{_}{customer->firstname:%5.5s:capitalize}{/literal}</pre>
+        <pre>{literal}{shop->name:%1.1s:capitalize}{order->id:%06d}{/literal}</pre>
     </p>
 </div>
 
