@@ -158,6 +158,10 @@ class Orderreference extends Module
 				$reference .= $vars[0];
 			}
 		}
+
+        // Reference can't be longer than 9 chars
+        $reference = substr($reference, 0, 9);
+
 		if (!Validate::isReference($reference)) {
     		Logger::addLog(sprintf('[%s] reference could not be changed, format has invalid characters', $this->name));
     		return false;
