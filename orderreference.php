@@ -24,7 +24,7 @@ class Orderreference extends Module
     {
         $this->name = 'orderreference';
         $this->tab = 'billing_invoicing';
-        $this->version = '1.2.0';
+        $this->version = '1.2.1';
         $this->author = 'blauwfruit';
         $this->need_instance = 0;
         $this->bootstrap = true;
