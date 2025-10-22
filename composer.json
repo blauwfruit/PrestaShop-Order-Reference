@@ -1,0 +1,33 @@
+{
+    "name": "blauwfruit/orderreference",
+    "description": "PrestaShop module to customize order references",
+    "type": "prestashop-module",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Matthijs",
+            "email": "matthijs@blauwfruit.nl"
+        }
+    ],
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Blauwfruit\\OrderReference\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Blauwfruit\\OrderReference\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
+

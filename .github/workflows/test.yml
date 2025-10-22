@@ -1,0 +1,121 @@
+name: PrestaShop Module Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        prestashop-version: ['latest']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Test with PrestaShop ${{ matrix.prestashop-version }}
+      run: |
+        export TAG=${{ matrix.prestashop-version }}
+        docker compose up -d
+        sleep 60
+        docker compose ps
+        docker compose logs apache
+
+    - name: Wait for server to be ready
+      run: |
+        timeout=300
+        counter=0
+        echo "Waiting for PrestaShop to be ready..."
+        until $(curl --output /dev/null --silent --head --fail http://localhost); do
+          if [ $counter -ge $timeout ]; then
+            echo "Timed out waiting for PrestaShop to start"
+            exit 1
+          fi
+          printf '.'
+          sleep 5
+          counter=$((counter+5))
+        done
+        echo "PrestaShop is ready!"
+
+    - name: Check PrestaShop is running
+      run: |
+        curl -f http://localhost || exit 1
+    
+    - name: Install Composer in container
+      run: |
+        echo "Installing Composer..."
+        docker compose exec -T apache bash -c "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
+        echo "Verifying Composer installation..."
+        docker compose exec -T apache composer --version
+        
+    - name: Install Composer dependencies
+      run: |
+        echo "Installing PHPUnit and dependencies..."
+        docker compose exec -T apache bash -c "cd modules/orderreference && composer install --no-interaction --prefer-dist --optimize-autoloader"
+        echo "Verifying PHPUnit installation..."
+        docker compose exec -T apache bash -c "cd modules/orderreference && ./vendor/bin/phpunit --version"
+    
+    - name: Test 1 - Default order reference (before module configuration)
+      run: |
+        echo "========================================="
+        echo "TEST 1: Default PrestaShop Behavior"
+        echo "========================================="
+        echo "Testing that orders use PrestaShop's default reference format"
+        echo "Expected: 9-character alphanumeric reference NOT equal to order ID"
+        echo ""
+        docker compose exec -T apache bash -c "cd modules/orderreference && ./vendor/bin/phpunit --filter testDefaultOrderReference --testdox"
+    
+    - name: Install and configure orderreference module
+      run: |
+        echo "========================================="
+        echo "SETUP: Installing orderreference module"
+        echo "========================================="
+        docker compose exec -T apache php bin/console prestashop:module install orderreference
+        echo ""
+        echo "Configuring module with format: {order->id:%d}"
+        docker compose exec -T apache php bin/console prestashop:config set ORDERREFERENCE_format --value="{order->id:%d}"
+        echo ""
+        echo "Verifying configuration..."
+        docker compose exec -T apache php bin/console prestashop:config get ORDERREFERENCE_format
+    
+    - name: Test 2 - Order reference after module configuration
+      run: |
+        echo "========================================="
+        echo "TEST 2: Module Configured Behavior"
+        echo "========================================="
+        echo "Testing that orders now use order ID as reference"
+        echo "Expected: Reference equals order ID"
+        echo ""
+        docker compose exec -T apache bash -c "cd modules/orderreference && ./vendor/bin/phpunit --filter testModuleOrderReference --testdox"
+    
+    - name: Run complete test suite
+      run: |
+        echo "========================================="
+        echo "FINAL: Complete Test Suite"
+        echo "========================================="
+        docker compose exec -T apache bash -c "cd modules/orderreference && ./vendor/bin/phpunit --testdox"
+    
+    - name: Test Summary
+      if: success()
+      run: |
+        echo "========================================="
+        echo "✅ ALL TESTS PASSED!"
+        echo "========================================="
+        echo "✓ Default PrestaShop reference behavior verified"
+        echo "✓ Module reference modification verified"
+        echo "✓ Order reference correctly set to order ID"
+        echo ""
+        echo "The orderreference module is working correctly!"
+
+    - name: Cleanup
+      if: always()
+      run: docker compose down --volumes
+
