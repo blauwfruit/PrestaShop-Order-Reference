@@ -1,0 +1,35 @@
+services:
+    mariadb:
+        image: mariadb:10.11
+        ports:
+            - "3306:3306"
+        networks:
+            - prestashop
+        environment:
+            MYSQL_ROOT_USER: root
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_USER: user
+            MYSQL_PASSWORD: password
+            MYSQL_DATABASE: prestashop
+    apache:
+        image: 'prestashop/prestashop:${TAG}'
+        networks:
+            - prestashop
+        depends_on:
+            - mariadb
+        environment:
+            PS_INSTALL_AUTO: 1
+            DB_PASSWD: password
+            DB_NAME: prestashop
+            DB_SERVER: mariadb
+            PS_DOMAIN: localhost
+            PS_FOLDER_INSTALL: install-dev
+            PS_FOLDER_ADMIN: admin-dev
+            PS_DEV_MODE: true
+        ports:
+            - "80:80"
+        volumes:
+            - ./:/var/www/html/modules/orderreference
+
+networks:
+    prestashop:

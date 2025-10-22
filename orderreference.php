@@ -127,7 +127,14 @@ class Orderreference extends Module
             return $order->reference;
         }
         $db = Db::getInstance();
-        $db->update('orders', array('reference' => $reference),  'id_order=' . (int)$id_order, $limit = 1);
+        $result = $db->update('orders', array('reference' => $reference),  'id_order=' . (int)$id_order, 1);
+        
+        // If update fails, try alternative method
+        if (!$result) {
+            $sql = 'UPDATE `' . _DB_PREFIX_ . 'orders` SET `reference` = \'' . pSQL($reference) . '\' WHERE `id_order` = ' . (int)$id_order;
+            $db->execute($sql);
+        }
+        
         return $reference;
     }
 
